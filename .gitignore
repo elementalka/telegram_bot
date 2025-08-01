@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment
+venv/
+
+# WhatsApp session data
+wa_session/
+
+# Node modules
+node_modules/
