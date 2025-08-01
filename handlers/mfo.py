@@ -1,6 +1,8 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile
+from utils.users import get_balance, deduct_balance
+from utils.prices import get_price
 from states.mfo_check_state import MFOCheckState
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +17,19 @@ router = Router()
 
 @router.callback_query(F.data == "check_mfo")
 async def start_mfo_check(callback: types.CallbackQuery, state: FSMContext):
+    price = get_price("mfo_check")
+    balance = get_balance(callback.from_user.id)
+    if balance < price:
+        deficit = price - balance
+        await callback.message.answer(
+            "Баланс недостаточен для продолжения операции\n"
+            f"Текущий баланс: {balance:.2f}\n"
+            f"Требуется: {price:.2f}\n"
+            f"Нехватает: {deficit:.2f}"
+        )
+        await callback.message.answer("Выберите действие:", reply_markup=main_inline_kb)
+        return
+
     await state.set_state(MFOCheckState.waiting_for_phone_file)
     await callback.message.answer(
         "МФО 📂 Пришли .txt, .csv или .xlsx, .xls) файл с телефонами в первой колонке.\n"
@@ -85,6 +100,9 @@ async def handle_mfo_file(message: types.Message, state: FSMContext):
 
     await message.answer_document(FSInputFile(path_yes), caption="✅ Найденные в базе МФО")
     await message.answer_document(FSInputFile(path_no), caption="✅ Не найдены в базе МФО")
+
+    price = get_price("mfo_check")
+    deduct_balance(user_id, price)
 
     await message.answer("📍 Что дальше?", reply_markup=main_inline_kb)
 
