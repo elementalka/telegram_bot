@@ -4,7 +4,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from handlers import arrests
 import asyncio
 import logging
-from handlers import start, mfo
+from handlers import start, mfo, whatsapp
 from checkers.arrest_queue import start_arrest_checker_worker
 import sys
 from aiogram.client.default import DefaultBotProperties
@@ -18,7 +18,8 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(start.router)
     dp.include_router(arrests.router)
-    dp.include_router(mfo.router)  
+    dp.include_router(mfo.router)
+    dp.include_router(whatsapp.router)
     await start_arrest_checker_worker()
     await dp.start_polling(bot)
 if __name__ == "__main__":
