@@ -10,7 +10,7 @@ import pandas as pd
 import os
 import chardet
 from db.mfo_sqlite import search_mfo_by_phones
-from keyboards.inline_main import main_inline_kb
+from keyboards.inline_main import main_menu_kb
 import re
 
 router = Router()
@@ -27,7 +27,7 @@ async def start_mfo_check(callback: types.CallbackQuery, state: FSMContext):
             f"Требуется: {price:.2f}\n"
             f"Нехватает: {deficit:.2f}"
         )
-        await callback.message.answer("Выберите действие:", reply_markup=main_inline_kb)
+        await callback.message.answer("Выберите действие:", reply_markup=main_menu_kb)
         return
 
     await state.set_state(MFOCheckState.waiting_for_phone_file)
@@ -104,6 +104,6 @@ async def handle_mfo_file(message: types.Message, state: FSMContext):
     price = get_price("mfo_check")
     deduct_balance(user_id, price)
 
-    await message.answer("📍 Что дальше?", reply_markup=main_inline_kb)
+    await message.answer("📍 Что дальше?", reply_markup=main_menu_kb)
 
 

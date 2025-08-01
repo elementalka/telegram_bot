@@ -7,7 +7,7 @@ from aiogram.types import (
 )
 from aiohttp import ClientSession
 from states.ws_check_state import WSCheckState
-from keyboards.inline_main import main_inline_kb
+from keyboards.inline_main import main_menu_kb
 import os
 
 WS_CHECKER_URL = os.getenv("WS_CHECKER_URL", "http://localhost:3000")
@@ -69,7 +69,7 @@ async def process_manual(message: types.Message, state: FSMContext):
         mark = "✅" if results.get(n) else "❌"
         out.append(f"{n}: {mark}")
 
-    await message.answer("\n".join(out), reply_markup=main_inline_kb)
+    await message.answer("\n".join(out), reply_markup=main_menu_kb)
     await state.clear()
 
 @router.message(WSCheckState.file, F.document)
@@ -103,7 +103,7 @@ async def process_file(message: types.Message, state: FSMContext):
         document=out_txt.encode("utf-8"),
         filename="whatsapp_valid.txt",
     )
-    await message.answer("📍 Что дальше?", reply_markup=main_inline_kb)
+    await message.answer("📍 Что дальше?", reply_markup=main_menu_kb)
     await state.clear()
 
 @router.message(WSCheckState.manual)
