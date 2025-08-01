@@ -95,15 +95,15 @@ async def process_inn_file(message: types.Message, state: FSMContext):
             caption="✅ Чистые ИНН (без арестов):"
         )
 
-        from keyboards.inline_main import main_inline_kb
-        await bot.send_message(user_id, "📍 Что дальше?", reply_markup=main_inline_kb)
+        from keyboards.inline_main import main_menu_kb
+        await bot.send_message(user_id, "📍 Что дальше?", reply_markup=main_menu_kb)
     df.to_csv(input_path, index=False, header=False, encoding="utf-8-sig")
     success, status = await enqueue_check(user_id, str(input_path), str(result_path), send_ready_file)
 
     if not success and status == "processing":
         await message.answer("⚠️ У тебя уже идёт проверка. Подожди окончания.")
-        from keyboards.inline_main import main_inline_kb
-        await bot.send_message(user_id, "📌 Выбери действие:", reply_markup=main_inline_kb)
+        from keyboards.inline_main import main_menu_kb
+        await bot.send_message(user_id, "📌 Выбери действие:", reply_markup=main_menu_kb)
         return
 
     note = "\n⏳ Файл поставлен в очередь." if status == "queued" else ""

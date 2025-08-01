@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict
+from datetime import datetime
 
 USER_FILE = Path(__file__).resolve().parent.parent / "users.json"
 
@@ -41,3 +42,27 @@ def add_balance(user_id: int, amount: float):
     user = data.setdefault(str(user_id), {"balance": 0})
     user["balance"] += amount
     _save_data(data)
+
+
+def register_user(user_id: int, name: str, username: str) -> bool:
+    """Add a user to users.json if not present.
+
+    Returns True if a new record was created.
+    """
+    data = _load_data()
+    uid = str(user_id)
+    if uid not in data:
+        data[uid] = {
+            "balance": 0,
+            "name": name,
+            "username": username,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        _save_data(data)
+        return True
+    return False
+
+
+def get_user(user_id: int) -> Dict:
+    data = _load_data()
+    return data.get(str(user_id), {})
